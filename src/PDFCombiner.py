@@ -6,6 +6,14 @@ from PyPDF2 import PdfFileMerger
 
 hard_links = []
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 class ListboxWidget(QListWidget):
 	def __init__(self, parent=None):
 		super().__init__(parent)
@@ -39,7 +47,7 @@ class ListboxWidget(QListWidget):
 					if str(url.toLocalFile()).endswith('.pdf'):
 						links.append(str(url.toLocalFile()))
 						base = os.path.basename(str(url.toLocalFile()))
-						QListWidgetItem(QIcon('pdf.png'), base, self)
+						QListWidgetItem(QIcon(resource_path('pdf.png')), base, self)
 			hard_links.extend(links)
 			# print(hard_links)
 		else:
@@ -171,7 +179,7 @@ class AppDemo(QMainWindow):
 		files_names = files_names[0]
 		for file in files_names:
 			base = os.path.basename(file)
-			QListWidgetItem(QIcon('pdf.png'), base, self.lstbox_view)
+			QListWidgetItem(QIcon(resource_path('pdf.png')), base, self.lstbox_view)
 		hard_links.extend(files_names)
 		# print(hard_links)
 
