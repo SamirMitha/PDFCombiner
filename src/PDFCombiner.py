@@ -1,6 +1,10 @@
+# Authors:
+# Programming: Samir Mitha
+# UI Design: Jayra Almanzor
+
 import sys, os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QListWidget, QListWidgetItem, QPushButton, QDialog, QMessageBox, QLabel, QFileDialog
-from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtCore import Qt, QUrl
 from PyPDF2 import PdfFileMerger
 
@@ -18,8 +22,19 @@ class ListboxWidget(QListWidget):
 	def __init__(self, parent=None):
 		super().__init__(parent)
 		self.setAcceptDrops(True)
-		self.resize(1200, 300)
+		self.setGeometry(10, 10, 880, 290)
 		self.setViewMode(QListWidget.IconMode)
+		self.setStyleSheet(
+				"""
+				QListWidget{
+				background: #545a63;
+				color: white;
+				border-radius: 15px;
+				border-bottom-left-radius: 0px;
+				border-bottom-right-radius: 0px;
+				}
+				"""
+			)
 
 	# drag and drop functions
 	def dragEnterEvent(self, event):
@@ -62,26 +77,52 @@ class CustomDialog(QMessageBox):
 class AppDemo(QMainWindow):
 	def __init__(self):
 		super().__init__()
+		self.setWindowIcon(QIcon(resource_path('PDF Combiner Logo.png')))
 		self.setWindowTitle("PDF Combiner")
-		self.resize(1200,600)
+		self.resize(900,420)
+		self.setStyleSheet(
+				"""
+				QMainWindow{
+				background: #34383d;
+				}
+				"""
+			)
 
 		self.lstbox_view = ListboxWidget(self)
 
 		self.instrLabel = QLabel(self)
 
+		self.plusimg = QLabel(self)
+
 		# label creation
 		self.instrLabel.setText("Add files by using the Add Files button or drag and drop files into the box above.")
-		self.instrLabel.setGeometry(20, 200, 600, 250)
+		self.instrLabel.setGeometry(10, 300, 880, 30)
+		self.instrLabel.setAlignment(Qt.AlignCenter)
+		self.instrLabel.setStyleSheet(
+				"""
+				QLabel{
+				background: #34383d;
+				color: white;
+				border: 1px dashed gray;
+				border-radius: 15px;
+				border-top-left-radius: 0px;
+				border-top-right-radius: 0px;
+				}
+				"""
+			)
+
+		# plus image creation
+		self.pixmap = QPixmap(resource_path('watta.png'))
+		self.plusimg.setPixmap(self.pixmap)
+		self.plusimg.setGeometry(418, 100, 100, 100)
 
 		# button creation
 		self.btnCombine = QPushButton('Combine', self)
-		self.btnCombine.setGeometry(500, 430, 200, 50)
+		self.btnCombine.setGeometry(350, 350, 200, 50)
 		self.btnClear = QPushButton('Clear', self)
-		self.btnClear.setGeometry(610, 350, 200, 50)
-		self.btnClose = QPushButton('Close', self)
-		self.btnClose.setGeometry(980, 530, 200, 50)
+		self.btnClear.setGeometry(600, 350, 200, 50)
 		self.btnAdd = QPushButton('Add Files', self)
-		self.btnAdd.setGeometry(390, 350, 200, 50)
+		self.btnAdd.setGeometry(100, 350, 200, 50)
 
 		# button colours
 		self.btnCombine.setStyleSheet(
@@ -149,8 +190,7 @@ class AppDemo(QMainWindow):
 
 		# button actions
 		self.btnCombine.clicked.connect(lambda: print(self.combinePDF()))
-		self.btnClear.clicked.connect(lambda: {self.lstbox_view.clear(), hard_links.clear()})
-		self.btnClose.clicked.connect(lambda: sys.exit())
+		self.btnClear.clicked.connect(lambda: {self.lstbox_view.clear(), hard_links.clear(), self.plusimg.show()})
 		self.btnAdd.clicked.connect(lambda: self.getDirectory())
 
 	def combinePDF(self):
@@ -180,6 +220,7 @@ class AppDemo(QMainWindow):
 		for file in files_names:
 			base = os.path.basename(file)
 			QListWidgetItem(QIcon(resource_path('pdf.png')), base, self.lstbox_view)
+			self.plusimg.hide()
 		hard_links.extend(files_names)
 		# print(hard_links)
 
